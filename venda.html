@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Venda</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Venda</h1>
+        <form id="saleForm">
+            <label for="cliente">Cliente:</label>
+            <select id="cliente" name="cliente"></select><br>
+
+            <label for="produto">Produto:</label>
+            <input type="text" id="produtoDisplay" readonly>
+            <button type="button" onclick="openProductModal()">Selecionar Produto</button><br>
+
+            <label for="quantidade">Quantidade:</label>
+            <input type="number" id="quantidade" name="quantidade" required><br>
+
+            <button type="button" onclick="finalizeSale()">Finalizar Venda</button>
+        </form>
+
+        <!-- Painel de detalhes do produto -->
+        <div id="productDetails" class="product-details">
+            <h2>Detalhes do Produto</h2>
+            <p><strong>Código:</strong> <span id="detailCodigo">-</span></p>
+            <p><strong>Descrição:</strong> <span id="detailDescricao">-</span></p>
+            <p><strong>Valor a Prazo:</strong> <span id="detailValorPrazo">-</span></p>
+            <p><strong>Valor à Vista:</strong> <span id="detailValorVista">-</span></p>
+        </div>
+    </div>
+
+    <!-- Modal de Produtos -->
+    <div id="productModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeProductModal()">&times;</span>
+            <h2>Escolha um Produto</h2>
+            <ul id="modalProductList"></ul>
+        </div>
+    </div>
+
+    <script src="scripts.js"></script>
+</body>
+</html>
