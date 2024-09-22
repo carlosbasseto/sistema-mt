@@ -4,44 +4,166 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Venda</title>
-    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .product-info {
+            display: flex;
+            justify-content: space-between;
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin: 10px 0;
+        }
+        .product-list {
+            margin-top: 20px;
+        }
+        .product-list-item {
+            display: flex;
+            justify-content: space-between;
+            margin: 5px 0;
+        }
+    </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Venda</h1>
-        <form id="saleForm">
-            <label for="cliente">Cliente:</label>
-            <select id="cliente" name="cliente"></select><br>
 
-            <label for="produto">Produto:</label>
-            <input type="text" id="produtoDisplay" readonly>
-            <button type="button" onclick="openProductModal()">Selecionar Produto</button><br>
-
-            <label for="quantidade">Quantidade:</label>
-            <input type="number" id="quantidade" name="quantidade" required><br>
-
-            <button type="button" onclick="finalizeSale()">Finalizar Venda</button>
-        </form>
-
-        <!-- Painel de detalhes do produto -->
-        <div id="productDetails" class="product-details">
-            <h2>Detalhes do Produto</h2>
-            <p><strong>Código:</strong> <span id="detailCodigo">-</span></p>
-            <p><strong>Descrição:</strong> <span id="detailDescricao">-</span></p>
-            <p><strong>Valor a Prazo:</strong> <span id="detailValorPrazo">-</span></p>
-            <p><strong>Valor à Vista:</strong> <span id="detailValorVista">-</span></p>
+    <h1>Realizar Venda</h1>
+    
+    <label for="cliente">Cliente:</label>
+    <input type="text" id="cliente" placeholder="Nome do Cliente">
+    
+    <h2>Adicionar Produto</h2>
+    
+    <label for="produto">Produto:</label>
+    <select id="produto" onchange="loadProductDetails()">
+        <option value="">Selecione um produto</option>
+        <!-- As opções de produtos serão preenchidas aqui -->
+    </select>
+    
+    <div id="productDetails" class="product-info" style="display:none;">
+        <div>
+            <strong>Descrição:</strong> <span id="detailDescricao"></span><br>
+            <strong>Código:</strong> <span id="detailCodigo"></span>
+        </div>
+        <div>
+            <strong>Valor à Vista:</strong> R$ <span id="detailValorVista"></span><br>
+            <strong>Valor a Prazo:</strong> R$ <span id="detailValorPrazo"></span>
         </div>
     </div>
 
-    <!-- Modal de Produtos -->
-    <div id="productModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeProductModal()">&times;</span>
-            <h2>Escolha um Produto</h2>
-            <ul id="modalProductList"></ul>
-        </div>
-    </div>
+    <label for="quantidade">Quantidade:</label>
+    <input type="number" id="quantidade" value="1" min="1" onchange="calculateTotal()">
+    
+    <button onclick="addProduct()">Adicionar Produto</button>
 
-    <script src="scripts.js"></script>
+    <h3>Produtos Adicionados:</h3>
+    <div class="product-list" id="productList"></div>
+    
+    <h3>Valor Total da Compra: R$ <span id="totalValue">0.00</span></h3>
+    
+    <button onclick="finalizeSale()">Finalizar Venda</button>
+
+    <script>
+        // Helper functions to handle localStorage
+        function getFromLocalStorage(key) {
+            const data = localStorage.getItem(key);
+            return data ? JSON.parse(data) : [];
+        }
+
+        function saveToLocalStorage(key, data) {
+            localStorage.setItem(key, JSON.stringify(data));
+        }
+
+        // Initialize products
+        let products = getFromLocalStorage('products');
+        let cart = [];
+
+        // Populate product select
+        function populateSelect() {
+            const productSelect = document.getElementById('produto');
+            products.forEach(product => {
+                const option = document.createElement('option');
+                option.value = product.codigo;
+                option.textContent = `${product.descricao} - Código: ${product.codigo}`;
+                productSelect.appendChild(option);
+            });
+        }
+
+        // Load product details
+        function loadProductDetails() {
+            const produtoCodigo = document.getElementById('produto').value;
+            const produtoSelecionado = products.find(product => product.codigo === produtoCodigo);
+            
+            if (produtoSelecionado) {
+                document.getElementById('detailDescricao').textContent = produtoSelecionado.descricao;
+                document.getElementById('detailCodigo').textContent = produtoSelecionado.codigo;
+                document.getElementById('detailValorVista').textContent = parseFloat(produtoSelecionado.valorVista).toFixed(2);
+                document.getElementById('detailValorPrazo').textContent = parseFloat(produtoSelecionado.valorPrazo).toFixed(2);
+                document.getElementById('productDetails').style.display = 'flex'; // Show product details
+                calculateTotal(); // Calculate total whenever a product is selected
+            } else {
+                document.getElementById('productDetails').style.display = 'none'; // Hide if no product selected
+                document.getElementById('totalValue').textContent = '0.00';
+            }
+        }
+
+        // Calculate total value based on quantity
+        function calculateTotal() {
+            let total = 0;
+            cart.forEach(item => {
+                total += parseFloat(item.valorVista) * item.quantidade;
+            });
+            document.getElementById('totalValue').textContent = total.toFixed(2);
+        }
+
+        // Add product to cart
+        function addProduct() {
+            const quantidade = parseInt(document.getElementById('quantidade').value);
+            const selectedProductCode = document.getElementById('produto').value;
+            const produtoSelecionado = products.find(product => product.codigo === selectedProductCode);
+
+            if (produtoSelecionado) {
+                cart.push({
+                    descricao: produtoSelecionado.descricao,
+                    codigo: produtoSelecionado.codigo,
+                    valorVista: produtoSelecionado.valorVista,
+                    quantidade: quantidade
+                });
+                updateProductList();
+                calculateTotal();
+            } else {
+                alert('Por favor, selecione um produto.');
+            }
+        }
+
+        // Update the product list displayed
+        function updateProductList() {
+            const productList = document.getElementById('productList');
+            productList.innerHTML = ''; // Clear the list before updating
+
+            cart.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'product-list-item';
+                div.innerHTML = `${item.descricao} - Código: ${item.codigo} - R$ ${parseFloat(item.valorVista).toFixed(2)} - Quantidade: ${item.quantidade}`;
+                productList.appendChild(div);
+            });
+        }
+
+        // Finalize sale
+        function finalizeSale() {
+            if (cart.length === 0) {
+                alert('Adicione pelo menos um produto antes de finalizar a venda.');
+                return;
+            }
+            alert('Venda concluída com sucesso!');
+            window.location.href = 'recebimento.html'; // Redireciona para a tela de recebimento
+        }
+
+        // Load products into the select on page load
+        window.addEventListener('load', () => {
+            populateSelect();
+        });
+    </script>
 </body>
 </html>
