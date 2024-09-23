@@ -5,16 +5,120 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tela Principal</title>
     <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
 </head>
 <body>
     <div class="container">
-        <h1>Tela Principal</h1>
+       <svg style="width: 55px; margin: 15px; fill: white;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!Font Awesome Free 6.6.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M0 24C0 10.7 10.7 0 24 0L69.5 0c22 0 41.5 12.8 50.6 32l411 0c26.3 0 45.5 25 38.6 50.4l-41 152.3c-8.5 31.4-37 53.3-69.5 53.3l-288.5 0 5.4 28.5c2.2 11.3 12.1 19.5 23.6 19.5L488 336c13.3 0 24 10.7 24 24s-10.7 24-24 24l-288.3 0c-34.6 0-64.3-24.6-70.7-58.5L77.4 54.5c-.7-3.8-4-6.5-7.9-6.5L24 48C10.7 48 0 37.3 0 24zM128 464a48 48 0 1 1 96 0 48 48 0 1 1 -96 0zm336-48a48 48 0 1 1 0 96 48 48 0 1 1 0-96z"/></svg>
         <ul>
             <li><a href="cadastro_produto.html">Cadastro de Produto</a></li>
             <li><a href="cadastro_cliente.html">Cadastro de Cliente</a></li>
             <li><a href="venda.html">Venda</a></li>
         </ul>
     </div>
+
+    <div class="conteudo">
+        <div class="retangulo-cinza"></div>
+        <div class="retangulo-conteudo">
+            <h2>Sistema de mercado e conveniência para sua empresa</h2>
+            <p class="desc-empre">Desde 1999, nossa equipe desenvolve soluções inovadoras em software, criando experiências eficientes e intuitivas para melhorar o dia a dia de nossos clientes.</p>
+            <button class="btn-saiba">Saiba mais</button>
+        </div>
+        <img class="mercado" src="mercado.jpg" alt="">
+    </div>
     <script src="scripts.js"></script>
+
+    <style>
+
+        *{
+            border: 0;
+            padding: 0;
+            font-family: "Roboto", system-ui;
+            margin: 0;
+        }
+
+        body{
+            background-color: rgb(44, 44, 44);;
+        }
+
+        .container{
+            display: flex;
+           
+            width: 100%;
+            height: 70px;
+        }
+
+        ul{
+            display: flex;
+            list-style: none;
+        }
+
+        li{
+            padding: 15px;
+            margin-top: 10px;
+        }
+
+        a{
+            text-decoration: none;
+            color: white;
+        }
+
+        a:hover{
+            border-bottom: 2px solid;
+        }
+
+        .conteudo{
+            display: flex;
+        }
+
+        .retangulo-cinza{
+            width: 4%;
+            margin-top: 75px;
+            margin-left: 50px;
+            height: 400px;
+            background-color: rgb(58, 58, 58);
+        }
+
+        .retangulo-conteudo{
+            background-color: rgb(26, 26, 26);
+            width: 20%;
+            height: 450px;
+            margin-top: 50px;
+            text-align: center;
+        }
+        
+        h2{
+            color: white;
+            padding: 15px;
+            margin-top: 25px;
+        }
+
+        .desc-empre{
+            color: #585656;
+            font-size: 13px;
+            margin-top: 25px;
+        }
+
+        .btn-saiba{
+            width: 200px;
+        height: 40px;
+        font-size: 14px;
+        border: 2px solid rgb(8, 44, 247);
+        background-color: #3d4fb9;
+        color: white;
+        border-radius: 8px;
+        cursor: pointer;
+        margin-top: 55px;
+        box-shadow: rgb(8, 44, 247) 0px 30px 60px -12px, rgb(8, 44, 247) 0px 18px 36px -18px;
+        }
+
+        .mercado{
+            height: 450px;
+            width: 65%;
+            object-fit: cover;
+            margin-top: 50px;
+        }
+    </style>
 </body>
 </html>

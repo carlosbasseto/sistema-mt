@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cadastro de Produto</title>
     <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
 </head>
 <body>
     <div class="container">
@@ -25,13 +28,114 @@
             <label for="quantidade">Quantidade:</label>
             <input type="number" id="quantidade" name="quantidade" required><br>
 
-            <button type="button" onclick="saveProduct()">Salvar Produto</button>
+           
         </form>
+        <button class="btn-produto" type="button" onclick="saveProduct()">Salvar Produto</button>
 
         <h2>Lista de Produtos</h2>
         <input type="text" id="searchProduct" placeholder="Pesquisar produto" oninput="updateProductList()">
-        <ul id="productList"></ul>
+        <div class="lista-produto">
+            
+            <ul id="productList"></ul>
+        </div>
     </div>
     <script src="scripts.js"></script>
+
+    <style>
+        *{
+            font-family: "Roboto", system-ui;
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+        }
+
+        body{
+            background-color: rgb(219, 219, 219);
+        }
+
+        h1{
+            text-align: center;
+            padding: 15px;
+        }
+
+        #productForm{
+            display: flex;
+            margin-left: 35px;
+            margin-top: 50px;
+        }
+
+        label{
+            font-size: 18px;
+            padding: 3px;
+        }
+
+        h2{
+            margin-top: 50px;
+            text-align: center;
+            font-size: 30px;
+        }
+
+        button{
+            margin-top: 5px;
+            width: 150px;
+            margin-left: 25px;
+            border: 2px solid #082cf7;
+            background-color: #3d4fb9;
+            color: white;
+            border-radius: 8px;
+            height: 30px;
+        }
+
+        button:hover{
+            box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+            cursor: pointer;
+        }
+
+        .btn-produto{
+            margin-left: 40%;
+            margin-top: 35px;
+            width: 250px;
+            font-size: 16px;
+            height: 40px;
+            border-radius: 15px;
+            border: 2px solid #08f74f;
+            background-color: #6ae990;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .btn-produto:hover{
+            box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+        }
+
+        #searchProduct{
+            width: 90%;
+            height: 30px;
+            margin-left: 5%;
+            margin-top: 15px;
+            font-size: 18px;
+        }
+
+        #searchProduct::placeholder{
+            padding: 15px;
+        }
+
+        .lista-produto{
+            margin-top: 25px;
+            margin-left: 20%;
+            border: 1px solid ;
+            width: 65%;
+            border-radius: 8px;
+        }
+
+        #productList{
+            list-style: none;
+            margin-top: 5px;
+            font-size: 15px;
+           text-transform: uppercase;
+           margin-left: 15px;
+        }
+    </style>
 </body>
 </html>
