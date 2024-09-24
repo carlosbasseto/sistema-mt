@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Caixa</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            font-family: "Roboto", system-ui;
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: rgb(219, 219, 219);
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        table, th, td {
+            border: 1px solid #000;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        .total-container {
+            text-align: right;
+            font-size: 20px;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        #totalSold {
+            color: green;
+        }
+
+        .clear-sales {
+            width: 150px;
+            padding: 10px;
+            background-color: #f44336;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .clear-sales:hover {
+            background-color: #d32f2f;
+        }
+    </style>
+</head>
+<body>
+    <h1>Tela de Caixa</h1>
+    
+    <table id="salesTable">
+        <thead>
+            <tr>
+                <th>Cliente</th>
+                <th>Produto</th>
+                <th>Quantidade</th>
+                <th>Valor Unitário (R$)</th>
+                <th>Total (R$)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- As vendas serão carregadas aqui -->
+        </tbody>
+    </table>
+
+    <div class="total-container">
+        Total Vendido: R$ <span id="totalSold">0.00</span>
+    </div>
+
+    <!-- Botão para limpar o caixa -->
+    <div style="text-align: center; margin-top: 20px;">
+        <button class="clear-sales" onclick="clearSales()">Limpar Caixa</button>
+    </div>
+
+    <script>
+        // Helper functions to handle localStorage
+        function getFromLocalStorage(key) {
+            const data = localStorage.getItem(key);
+            return data ? JSON.parse(data) : [];
+        }
+
+        function saveToLocalStorage(key, data) {
+            localStorage.setItem(key, JSON.stringify(data));
+        }
+
+        // Carregar vendas e exibir na tabela
+        function loadSales() {
+            const sales = getFromLocalStorage('sales'); // Recupera as vendas do localStorage
+            const tableBody = document.querySelector('#salesTable tbody');
+            let totalSold = 0;
+
+            if (sales.length === 0) {
+                const emptyRow = document.createElement('tr');
+                const emptyCell = document.createElement('td');
+                emptyCell.colSpan = 5;
+                emptyCell.textContent = 'Nenhuma venda registrada.';
+                emptyRow.appendChild(emptyCell);
+                tableBody.appendChild(emptyRow);
+                return;
+            }
+
+            sales.forEach(sale => {
+                sale.products.forEach(product => {
+                    const row = document.createElement('tr');
+
+                    // Coluna Cliente
+                    const clienteCell = document.createElement('td');
+                    clienteCell.textContent = sale.cliente;
+                    row.appendChild(clienteCell);
+
+                    // Coluna Produto
+                    const productCell = document.createElement('td');
+                    productCell.textContent = product.descricao;
+                    row.appendChild(productCell);
+
+                    // Coluna Quantidade
+                    const quantityCell = document.createElement('td');
+                    quantityCell.textContent = product.quantidade;
+                    row.appendChild(quantityCell);
+
+                    // Coluna Valor Unitário
+                    const unitPriceCell = document.createElement('td');
+                    unitPriceCell.textContent = parseFloat(product.valorVista).toFixed(2);
+                    row.appendChild(unitPriceCell);
+
+                    // Coluna Total
+                    const totalCell = document.createElement('td');
+                    const totalProduct = parseFloat(product.valorVista) * product.quantidade;
+                    totalCell.textContent = totalProduct.toFixed(2);
+                    row.appendChild(totalCell);
+
+                    tableBody.appendChild(row);
+
+                    totalSold += totalProduct;  // Acumula o total vendido
+                });
+            });
+
+            document.getElementById('totalSold').textContent = totalSold.toFixed(2); // Exibe o total vendido
+        }
+
+        // Função para limpar as vendas e o caixa
+        function clearSales() {
+            // Remove os dados de vendas do localStorage
+            localStorage.removeItem('sales');
+
+            // Limpa a tabela e reseta o total vendido
+            const tableBody = document.querySelector('#salesTable tbody');
+            tableBody.innerHTML = '';
+
+            const emptyRow = document.createElement('tr');
+            const emptyCell = document.createElement('td');
+            emptyCell.colSpan = 5;
+            emptyCell.textContent = 'Nenhuma venda registrada.';
+            emptyRow.appendChild(emptyCell);
+            tableBody.appendChild(emptyRow);
+
+            // Reseta o total vendido
+            document.getElementById('totalSold').textContent = '0.00';
+
+            alert('Todos os dados do caixa foram limpos!');
+        }
+
+        // Carregar vendas ao carregar a página
+        window.addEventListener('load', () => {
+            loadSales();
+        });
+        
+    </script>
+</body>
+</html>

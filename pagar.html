@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pagar</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            font-family: "Roboto", system-ui;
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: rgb(219, 219, 219);
+            padding: 20px;
+            text-align: center;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+        }
+
+        .payment-options {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .payment-options label {
+            margin-right: 15px;
+        }
+
+        .btn-pagar {
+            width: 150px;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .btn-pagar:hover {
+            background-color: #45a049;
+        }
+
+        .total-container {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Pagar a Venda</h1>
+    <div class="total-container">
+        Total a Pagar: R$ <span id="totalValue">0.00</span>
+    </div>
+
+    <div class="payment-options">
+        <label><input type="radio" name="paymentMethod" value="Dinheiro"> Dinheiro</label>
+        <label><input type="radio" name="paymentMethod" value="Pix"> Pix</label>
+        <label><input type="radio" name="paymentMethod" value="Cartão de Crédito"> Cartão de Crédito</label>
+        <label><input type="radio" name="paymentMethod" value="Cartão de Débito"> Cartão de Débito</label>
+    </div>
+
+    <button class="btn-pagar" onclick="processPayment()">Pagar</button>
+
+    <script>
+        // Helper functions to handle localStorage
+        function getFromLocalStorage(key) {
+            const data = localStorage.getItem(key);
+            return data ? JSON.parse(data) : null;
+        }
+
+        function saveToLocalStorage(key, data) {
+            localStorage.setItem(key, JSON.stringify(data));
+        }
+
+        // Carregar o valor total da venda
+        window.addEventListener('load', () => {
+            const currentSale = getFromLocalStorage('currentSale');
+            if (currentSale) {
+                document.getElementById('totalValue').textContent = currentSale.totalValue.toFixed(2);
+            }
+        });
+
+        // Processar o pagamento
+        function processPayment() {
+            const selectedPaymentMethod = document.querySelector('input[name="paymentMethod"]:checked');
+            if (!selectedPaymentMethod) {
+                alert('Por favor, selecione uma forma de pagamento.');
+                return;
+            }
+
+            const currentSale = getFromLocalStorage('currentSale');
+            currentSale.paymentMethod = selectedPaymentMethod.value;
+
+            // Atualiza a venda atual no localStorage com a forma de pagamento
+            let sales = getFromLocalStorage('sales');
+            const updatedSales = sales.map(sale => sale === currentSale ? currentSale : sale);
+            saveToLocalStorage('sales', updatedSales);
+
+            alert('Pagamento realizado com sucesso!');
+
+            // Redireciona para a tela de recebimento
+            window.location.href = 'recebimento.html';
+        }
+    </script>
+</body>
+</html>

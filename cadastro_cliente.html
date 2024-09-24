@@ -12,16 +12,111 @@
         <form id="clientForm">
             <label for="nome">Nome:</label>
             <input type="text" id="nome" name="nome" required><br>
+
             <label for="cpf">CPF:</label>
             <input type="text" id="cpf" name="cpf" required><br>
+
             <label for="nascimento">Data de Nascimento:</label>
             <input type="date" id="nascimento" name="nascimento" required><br>
+
+            <!-- Campo oculto para Data de Cadastro -->
+            <input type="hidden" id="dataCadastro" name="dataCadastro">
+
             <button type="button" onclick="saveClient()">Salvar Cliente</button>
         </form>
+
         <h2>Pesquisa de Cliente</h2>
-        <input type="text" id="searchClient" placeholder="Pesquisar cliente...">
+        <input type="text" id="searchClient" placeholder="Pesquisar cliente..." oninput="searchClients()">
         <ul id="clientList"></ul>
     </div>
-    <script src="scripts.js"></script>
+
+    <script>
+        // Função para salvar cliente no localStorage
+        function saveClient() {
+            const nome = document.getElementById('nome').value;
+            const cpf = document.getElementById('cpf').value;
+            const nascimento = document.getElementById('nascimento').value;
+
+            // Obtendo a data atual para o campo de Data de Cadastro
+            const dataCadastro = new Date().toLocaleDateString('pt-BR');
+
+            const cliente = { nome, cpf, nascimento, dataCadastro };
+
+            let clients = getFromLocalStorage('clients');
+            clients.push(cliente);
+            saveToLocalStorage('clients', clients);
+
+            alert('Cliente cadastrado com sucesso!');
+            document.getElementById('clientForm').reset(); // Limpa o formulário
+            listClients(); // Atualiza a lista de clientes
+        }
+
+        // Função para listar clientes
+        function listClients() {
+            const clientList = document.getElementById('clientList');
+            const clients = getFromLocalStorage('clients');
+
+            clientList.innerHTML = ''; // Limpa a lista de clientes
+
+            clients.forEach((client, index) => {
+                const li = document.createElement('li');
+                li.textContent = `Nome: ${client.nome} - CPF: ${client.cpf} - Nascimento: ${client.nascimento} - Cadastro: ${client.dataCadastro}`;
+                
+                // Botão de deletar
+                const deleteButton = document.createElement('button');
+                deleteButton.textContent = 'Deletar';
+                deleteButton.onclick = () => deleteClient(index);
+                
+                li.appendChild(deleteButton);
+                clientList.appendChild(li);
+            });
+        }
+
+        // Função para deletar cliente
+        function deleteClient(index) {
+            let clients = getFromLocalStorage('clients');
+            clients.splice(index, 1); // Remove o cliente pelo índice
+            saveToLocalStorage('clients', clients);
+            alert('Cliente deletado com sucesso!');
+            listClients(); // Atualiza a lista de clientes
+        }
+
+        // Função para pesquisar clientes
+        function searchClients() {
+            const query = document.getElementById('searchClient').value.toLowerCase();
+            const clients = getFromLocalStorage('clients');
+            const filteredClients = clients.filter(client => client.nome.toLowerCase().includes(query));
+
+            const clientList = document.getElementById('clientList');
+            clientList.innerHTML = '';
+
+            filteredClients.forEach((client, index) => {
+                const li = document.createElement('li');
+                li.textContent = `Nome: ${client.nome} - CPF: ${client.cpf} - Nascimento: ${client.nascimento} - Cadastro: ${client.dataCadastro}`;
+                
+                // Botão de deletar
+                const deleteButton = document.createElement('button');
+                deleteButton.textContent = 'Deletar';
+                deleteButton.onclick = () => deleteClient(clients.indexOf(client));
+                
+                li.appendChild(deleteButton);
+                clientList.appendChild(li);
+            });
+        }
+
+        // Função para recuperar do localStorage
+        function getFromLocalStorage(key) {
+            const data = localStorage.getItem(key);
+            return data ? JSON.parse(data) : [];
+        }
+
+        // Função para salvar no localStorage
+        function saveToLocalStorage(key, data) {
+            localStorage.setItem(key, JSON.stringify(data));
+        }
+
+        // Carrega a lista de clientes ao carregar a página
+        window.addEventListener('load', listClients);
+    </script>
 </body>
 </html>

@@ -237,6 +237,40 @@
         window.addEventListener('load', () => {
             populateSelect();
         });
+
+        // Função para finalizar a venda e salvar no localStorage
+function finalizeSale() {
+    if (cart.length === 0) {
+        alert('Adicione pelo menos um produto antes de finalizar a venda.');
+        return;
+    }
+
+    // Captura o nome do cliente
+    const cliente = document.getElementById('cliente').value;
+
+    if (!cliente) {
+        alert('Por favor, insira o nome do cliente.');
+        return;
+    }
+
+    // Objeto de venda contendo o cliente e os produtos
+    const sale = {
+        cliente: cliente,
+        products: cart,  // Os produtos já estão no carrinho
+        totalValue: parseFloat(document.getElementById('totalValue').textContent)  // Valor total da compra
+    };
+
+    // Recupera as vendas existentes no localStorage ou cria uma nova lista se não houver vendas
+    const sales = getFromLocalStorage('sales');
+    sales.push(sale);
+    saveToLocalStorage('sales', sales);  // Salva a nova lista de vendas
+
+    // Exibe mensagem de sucesso e redireciona
+    alert('Venda concluída com sucesso!');
+    window.location.href = 'recebimento.html';  // Redireciona para a tela de recebimento
+}
+
+
     </script>
 </body>
 </html>
