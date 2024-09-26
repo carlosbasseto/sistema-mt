@@ -1,0 +1,8 @@
+1- Tela principal - Feito
+2- Tela de produto - Feito
+3- Tela de venda - Feito
+4- Tela de cliente - Feito
+5- Tela de caixa - Feito
+6- Controle de estoque - Ok
+7- Promoção
+8- Compra

@@ -136,109 +136,109 @@
     <h3>Valor Total da Compra: R$ <span id="totalValue">0.00</span></h3>
     
     <button class="finaliza-venda" onclick="finalizeSale()">Finalizar Venda</button>
+    <span id="promoMessage" class="promo-message" style="display:none;"></span> <!-- Mensagem de promoção -->
 
     <script>
-        // Helper functions to handle localStorage
-        function getFromLocalStorage(key) {
-            const data = localStorage.getItem(key);
-            return data ? JSON.parse(data) : [];
+// Helper functions to handle localStorage
+function getFromLocalStorage(key) {
+    const data = localStorage.getItem(key);
+    return data ? JSON.parse(data) : [];
+}
+
+function saveToLocalStorage(key, data) {
+    localStorage.setItem(key, JSON.stringify(data));
+}
+
+// Initialize products and promotions
+let products = getFromLocalStorage('products');
+let promotions = getFromLocalStorage('promotions'); // Supondo que as promoções estejam armazenadas assim
+let cart = [];
+
+// Populate product select
+function populateSelect() {
+    const productSelect = document.getElementById('produto');
+    products.forEach(product => {
+        const option = document.createElement('option');
+        option.value = product.codigo;
+        option.textContent = `${product.descricao} - Código: ${product.codigo}`;
+        productSelect.appendChild(option);
+    });
+}
+
+// Load product details
+function loadProductDetails() {
+    const produtoCodigo = document.getElementById('produto').value;
+    const produtoSelecionado = products.find(product => product.codigo === produtoCodigo);
+    const promocao = promotions.find(promo => promo.codigoProduto === produtoCodigo);
+    
+    if (produtoSelecionado) {
+        const valorOriginal = parseFloat(produtoSelecionado.valorVista).toFixed(2);
+        if (promocao) {
+            const valorPromocional = valorOriginal - (valorOriginal * promocao.desconto / 100);
+            document.getElementById('detailDescricao').textContent = produtoSelecionado.descricao;
+            document.getElementById('detailCodigo').textContent = produtoSelecionado.codigo;
+            document.getElementById('detailValorVista').textContent = valorPromocional.toFixed(2) + ' (Promoção!)';
+        } else {
+            document.getElementById('detailValorVista').textContent = valorOriginal;
         }
+        document.getElementById('detailValorPrazo').textContent = parseFloat(produtoSelecionado.valorPrazo).toFixed(2);
+        document.getElementById('productDetails').style.display = 'flex'; // Show product details
+        calculateTotal(); // Calculate total whenever a product is selected
+    } else {
+        document.getElementById('productDetails').style.display = 'none'; // Hide if no product selected
+        document.getElementById('totalValue').textContent = '0.00';
+    }
+}
 
-        function saveToLocalStorage(key, data) {
-            localStorage.setItem(key, JSON.stringify(data));
+// Calculate total value based on quantity
+function calculateTotal() {
+    let total = 0;
+    cart.forEach(item => {
+        total += parseFloat(item.valorVista) * item.quantidade;
+    });
+    document.getElementById('totalValue').textContent = total.toFixed(2);
+}
+
+// Add product to cart
+function addProduct() {
+    const quantidade = parseInt(document.getElementById('quantidade').value);
+    const selectedProductCode = document.getElementById('produto').value;
+    const produtoSelecionado = products.find(product => product.codigo === selectedProductCode);
+    const promocao = promotions.find(promo => promo.codigoProduto === selectedProductCode);
+
+    if (produtoSelecionado) {
+        let valorFinal = parseFloat(produtoSelecionado.valorVista);
+        if (promocao) {
+            valorFinal -= valorFinal * promocao.desconto / 100;
         }
-
-        // Initialize products
-        let products = getFromLocalStorage('products');
-        let cart = [];
-
-        // Populate product select
-        function populateSelect() {
-            const productSelect = document.getElementById('produto');
-            products.forEach(product => {
-                const option = document.createElement('option');
-                option.value = product.codigo;
-                option.textContent = `${product.descricao} - Código: ${product.codigo}`;
-                productSelect.appendChild(option);
-            });
-        }
-
-        // Load product details
-        function loadProductDetails() {
-            const produtoCodigo = document.getElementById('produto').value;
-            const produtoSelecionado = products.find(product => product.codigo === produtoCodigo);
-            
-            if (produtoSelecionado) {
-                document.getElementById('detailDescricao').textContent = produtoSelecionado.descricao;
-                document.getElementById('detailCodigo').textContent = produtoSelecionado.codigo;
-                document.getElementById('detailValorVista').textContent = parseFloat(produtoSelecionado.valorVista).toFixed(2);
-                document.getElementById('detailValorPrazo').textContent = parseFloat(produtoSelecionado.valorPrazo).toFixed(2);
-                document.getElementById('productDetails').style.display = 'flex'; // Show product details
-                calculateTotal(); // Calculate total whenever a product is selected
-            } else {
-                document.getElementById('productDetails').style.display = 'none'; // Hide if no product selected
-                document.getElementById('totalValue').textContent = '0.00';
-            }
-        }
-
-        // Calculate total value based on quantity
-        function calculateTotal() {
-            let total = 0;
-            cart.forEach(item => {
-                total += parseFloat(item.valorVista) * item.quantidade;
-            });
-            document.getElementById('totalValue').textContent = total.toFixed(2);
-        }
-
-        // Add product to cart
-        function addProduct() {
-            const quantidade = parseInt(document.getElementById('quantidade').value);
-            const selectedProductCode = document.getElementById('produto').value;
-            const produtoSelecionado = products.find(product => product.codigo === selectedProductCode);
-
-            if (produtoSelecionado) {
-                cart.push({
-                    descricao: produtoSelecionado.descricao,
-                    codigo: produtoSelecionado.codigo,
-                    valorVista: produtoSelecionado.valorVista,
-                    quantidade: quantidade
-                });
-                updateProductList();
-                calculateTotal();
-            } else {
-                alert('Por favor, selecione um produto.');
-            }
-        }
-
-        // Update the product list displayed
-        function updateProductList() {
-            const productList = document.getElementById('productList');
-            productList.innerHTML = ''; // Clear the list before updating
-
-            cart.forEach(item => {
-                const div = document.createElement('div');
-                div.className = 'product-list-item';
-                div.innerHTML = `${item.descricao} - Código: ${item.codigo} - R$ ${parseFloat(item.valorVista).toFixed(2)} - Quantidade: ${item.quantidade}`;
-                productList.appendChild(div);
-            });
-        }
-
-        // Finalize sale
-        function finalizeSale() {
-            if (cart.length === 0) {
-                alert('Adicione pelo menos um produto antes de finalizar a venda.');
-                return;
-            }
-            alert('Venda concluída com sucesso!');
-            window.location.href = 'recebimento.html'; // Redireciona para a tela de recebimento
-        }
-
-        // Load products into the select on page load
-        window.addEventListener('load', () => {
-            populateSelect();
+        
+        cart.push({
+            descricao: produtoSelecionado.descricao,
+            codigo: produtoSelecionado.codigo,
+            valorVista: valorFinal.toFixed(2),
+            quantidade: quantidade
         });
+        updateProductList();
+        calculateTotal();
+    } else {
+        alert('Por favor, selecione um produto.');
+    }
+}
 
-        // Função para finalizar a venda e salvar no localStorage
+// Update the product list displayed
+function updateProductList() {
+    const productList = document.getElementById('productList');
+    productList.innerHTML = ''; // Clear the list before updating
+
+    cart.forEach(item => {
+        const div = document.createElement('div');
+        div.className = 'product-list-item';
+        div.innerHTML = `${item.descricao} - Código: ${item.codigo} - R$ ${parseFloat(item.valorVista).toFixed(2)} - Quantidade: ${item.quantidade}`;
+        productList.appendChild(div);
+    });
+}
+
+// Finalize sale
 function finalizeSale() {
     if (cart.length === 0) {
         alert('Adicione pelo menos um produto antes de finalizar a venda.');
@@ -270,7 +270,56 @@ function finalizeSale() {
     window.location.href = 'recebimento.html';  // Redireciona para a tela de recebimento
 }
 
+// Load products into the select on page load
+window.addEventListener('load', () => {
+    populateSelect();
+});
+// Função para finalizar a venda e salvar no localStorage
+function finalizeSale() {
+    if (cart.length === 0) {
+        alert('Adicione pelo menos um produto antes de finalizar a venda.');
+        return;
+    }
+
+    // Captura o nome do cliente
+    const cliente = document.getElementById('cliente').value;
+
+    if (!cliente) {
+        alert('Por favor, insira o nome do cliente.');
+        return;
+    }
+
+    // Objeto de venda contendo o cliente e os produtos
+    const sale = {
+        cliente: cliente,
+        products: cart,  // Os produtos já estão no carrinho
+        totalValue: parseFloat(document.getElementById('totalValue').textContent)  // Valor total da compra
+    };
+
+    // Recupera as vendas existentes no localStorage ou cria uma nova lista se não houver vendas
+    const sales = getFromLocalStorage('sales');
+    sales.push(sale);
+    saveToLocalStorage('sales', sales);  // Salva a nova lista de vendas
+
+    // Atualiza o estoque de produtos
+    cart.forEach(item => {
+        const productIndex = products.findIndex(product => product.codigo === item.codigo);
+        if (productIndex !== -1) {
+            products[productIndex].quantidade -= item.quantidade;  // Subtrai a quantidade vendida do estoque
+        }
+    });
+
+    // Salva o estoque atualizado no localStorage
+    saveToLocalStorage('products', products);
+
+    // Exibe mensagem de sucesso e redireciona
+    alert('Venda concluída com sucesso!');
+    window.location.href = 'recebimento.html';  // Redireciona para a tela de recebimento
+}
+
+
 
     </script>
+    <script src="promocao.js"></script>
 </body>
 </html>

@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Promoções</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* CSS Styles */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: rgb(219, 219, 219);
+        }
+
+        h1, h2 {
+            text-align: center;
+        }
+
+        .promo-list {
+            margin: 20px auto;
+            max-width: 600px;
+        }
+
+        .promo-item {
+            border: 1px solid #000;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 10px 0;
+            display: flex;
+            flex-direction: column;
+            background: #fff;
+        }
+
+        .promo-item strong {
+            margin-bottom: 5px;
+        }
+
+        #promoForm {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+        }
+
+        button {
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+            border-radius: 5px;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Gerenciar Promoções</h1>
+
+    <div id="promoForm">
+        <h2>Criar Nova Promoção</h2>
+        <input type="text" id="nomePromocao" placeholder="Nome da Promoção" required>
+        <input type="text" id="codigoProduto" placeholder="Código do Produto" required>
+        <input type="number" id="desconto" placeholder="Desconto (%)" required min="0" max="100">
+        <button onclick="addPromotion()">Adicionar Promoção</button>
+    </div>
+
+    <h2>Promoções Ativas</h2>
+    <div class="promo-list" id="promoList"></div>
+
+    <script>
+        // Funções para manipulação do localStorage
+        function getFromLocalStorage(key) {
+            const data = localStorage.getItem(key);
+            return data ? JSON.parse(data) : [];
+        }
+
+        function saveToLocalStorage(key, data) {
+            localStorage.setItem(key, JSON.stringify(data));
+        }
+
+        // Carregar promoções do localStorage
+        let promotions = getFromLocalStorage('promotions');
+
+        // Função para exibir promoções
+        function displayPromotions() {
+            const promoList = document.getElementById('promoList');
+            promoList.innerHTML = ''; // Limpar a lista antes de preencher
+
+            promotions.forEach((promo, index) => {
+                const promoItem = document.createElement('div');
+                promoItem.className = 'promo-item';
+                promoItem.innerHTML = `
+                    <strong>${promo.nome}</strong>
+                    Código do Produto: ${promo.codigoProduto}<br>
+                    Desconto: ${promo.desconto}%
+                    <button onclick="removePromotion(${index})">Remover</button>
+                `;
+                promoList.appendChild(promoItem);
+            });
+        }
+
+        // Adicionar nova promoção
+        function addPromotion() {
+            const nomePromocao = document.getElementById('nomePromocao').value;
+            const codigoProduto = document.getElementById('codigoProduto').value;
+            const desconto = parseInt(document.getElementById('desconto').value);
+
+            if (nomePromocao && codigoProduto && desconto >= 0) {
+                promotions.push({ nome: nomePromocao, codigoProduto: codigoProduto, desconto: desconto });
+                saveToLocalStorage('promotions', promotions);
+                displayPromotions();
+                clearForm();
+            } else {
+                alert('Por favor, preencha todos os campos corretamente.');
+            }
+        }
+
+        // Remover promoção
+        function removePromotion(index) {
+            promotions.splice(index, 1);
+            saveToLocalStorage('promotions', promotions);
+            displayPromotions();
+        }
+
+        // Limpar o formulário
+        function clearForm() {
+            document.getElementById('nomePromocao').value = '';
+            document.getElementById('codigoProduto').value = '';
+            document.getElementById('desconto').value = '';
+        }
+
+        // Exibir promoções ao carregar a página
+        window.onload = displayPromotions;
+    </script>
+</body>
+</html>
